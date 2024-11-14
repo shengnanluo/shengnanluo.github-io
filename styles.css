@@ -1,35 +1,112 @@
 #container {
     display: flex;
     height: 100vh;
+    background: #1a1a1a;
+    color: #fff;
 }
 
 #scene-container {
     flex: 1;
-    background: #f0f0f0;
+    background: #000;
 }
 
 #controls {
-    width: 200px;
+    width: 300px;
     padding: 20px;
-    background: #fff;
-    border-left: 1px solid #ccc;
+    background: #2a2a2a;
+    border-left: 1px solid #3a3a3a;
+    overflow-y: auto;
+}
+
+.section-title {
+    font-size: 1.2em;
+    color: #4CAF50;
+    margin: 20px 0 10px 0;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #4CAF50;
 }
 
 .control-group {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 button {
     width: 100%;
     padding: 10px;
     margin: 5px 0;
-    background: #2196F3;
+    background: #333;
     color: white;
-    border: none;
+    border: 1px solid #444;
     border-radius: 4px;
     cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 button:hover {
+    background: #4CAF50;
+    transform: translateY(-2px);
+}
+
+.ai-controls button {
     background: #1976D2;
+}
+
+.ai-controls button:hover {
+    background: #2196F3;
+}
+
+.analysis-panel {
+    background: #333;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.metric {
+    margin: 10px 0;
+}
+
+.meter {
+    height: 10px;
+    background: #444;
+    border-radius: 5px;
+    margin-top: 5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.meter::after {
+    content: '';
+    position: absolute;
+    height: 100%;
+    background: #4CAF50;
+    width: 70%;
+    animation: pulse 2s infinite;
+}
+
+.challenges-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.challenge {
+    background: #333;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.challenge:hover {
+    background: #444;
+    transform: scale(1.05);
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
 } 
