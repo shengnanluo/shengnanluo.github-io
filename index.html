@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>手术机器人模拟系统</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="container">
+        <div id="scene-container"></div>
+        <div id="controls">
+            <div class="control-group">
+                <button id="arm-up">机械臂上升</button>
+                <button id="arm-down">机械臂下降</button>
+            </div>
+            <div class="control-group">
+                <button id="rotate-left">向左旋转</button>
+                <button id="rotate-right">向右旋转</button>
+            </div>
+            <div class="control-group">
+                <button id="grip-open">打开夹持器</button>
+                <button id="grip-close">关闭夹持器</button>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="simulator.js"></script>
+</body>
+</html> 
