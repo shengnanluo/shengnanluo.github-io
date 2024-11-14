@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI医疗机器人模拟器</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI医疗机器人模拟器</h1>
+            <div id="score">得分: <span>0</span></div>
+        </header>
+
+        <main>
+            <div class="game-area">
+                <canvas id="gameCanvas"></canvas>
+                <div id="tutorial" class="tutorial"></div>
+            </div>
+            
+            <div class="control-panel">
+                <div id="level-info"></div>
+                <div class="buttons">
+                    <button id="startBtn">开始游戏</button>
+                    <button id="nextBtn" disabled>下一关</button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>通过游戏学习AI在医疗机器人中的应用</p>
+        </footer>
+    </div>
+
+    <script src="js/simulator.js"></script>
+    <script src="js/medical-vision.js"></script>
+    <script src="js/path-planning.js"></script>
+    <script src="js/risk-assessment.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html> 
