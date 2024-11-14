@@ -30,6 +30,33 @@
                 <div id="ai-feedback" class="ai-feedback hidden">
                     <div class="ai-message"></div>
                 </div>
+                <div class="ai-analysis-panel">
+                    <h3>AI系统分析</h3>
+                    <div class="ai-metrics">
+                        <div class="metric">
+                            <label>决策准确度</label>
+                            <div class="progress-bar">
+                                <div id="decisionAccuracy" class="progress"></div>
+                            </div>
+                        </div>
+                        <div class="metric">
+                            <label>响应时间</label>
+                            <div class="progress-bar">
+                                <div id="responseTime" class="progress"></div>
+                            </div>
+                        </div>
+                        <div class="metric">
+                            <label>安全评分</label>
+                            <div class="progress-bar">
+                                <div id="safetyScore" class="progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ai-challenges">
+                        <h4>当前挑战</h4>
+                        <ul id="challengesList"></ul>
+                    </div>
+                </div>
             </div>
             
             <div class="controls">

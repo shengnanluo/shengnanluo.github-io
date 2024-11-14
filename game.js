@@ -11,6 +11,31 @@ class SurgeryGame {
         this.setupCanvas();
         this.setupEventListeners();
         this.loadLevel(this.currentLevel);
+
+        // 添加AI分析系统
+        this.aiSystem = {
+            pathPlanning: {
+                enabled: true,
+                accuracy: 0.95,
+                latency: 20 // ms
+            },
+            imageRecognition: {
+                enabled: true,
+                accuracy: 0.98,
+                processingTime: 50 // ms
+            },
+            riskAssessment: {
+                enabled: true,
+                threshold: 0.3
+            }
+        };
+
+        // 添加手术场景元素
+        this.surgicalElements = {
+            criticalAreas: [], // 重要器官区域
+            targetAreas: [],   // 手术目标区域
+            obstacles: []      // 手术障碍物
+        };
     }
 
     loadLevel(levelNum) {
@@ -187,6 +212,144 @@ class SurgeryGame {
             <p>风险控制: ${this.calculateRiskControl()}%</p>
             <p>AI辅助效果: ${this.calculateAIEffectiveness()}%</p>
         `;
+    }
+
+    // 添加AI路径规划可视化
+    visualizeAIPath(start, target) {
+        if (!this.aiSystem.pathPlanning.enabled) return;
+
+        const path = this.calculateSafePath(start, target);
+        
+        this.ctx.beginPath();
+        this.ctx.strokeStyle = 'rgba(0, 255, 0, 0.3)';
+        this.ctx.setLineDash([5, 5]);
+        
+        path.forEach((point, index) => {
+            if (index === 0) {
+                this.ctx.moveTo(point.x, point.y);
+            } else {
+                this.ctx.lineTo(point.x, point.y);
+            }
+        });
+        
+        this.ctx.stroke();
+        this.ctx.setLineDash([]);
+    }
+
+    // AI风险评估
+    assessRisk(position) {
+        if (!this.aiSystem.riskAssessment.enabled) return 0;
+
+        let risk = 0;
+        
+        // 检查与关键区域的距离
+        this.surgicalElements.criticalAreas.forEach(area => {
+            const distance = this.calculateDistance(position, area.position);
+            if (distance < area.safeDistance) {
+                risk += (area.safeDistance - distance) / area.safeDistance;
+            }
+        });
+
+        return Math.min(1, risk);
+    }
+
+    // 添加手术挑战
+    addSurgicalChallenge(level) {
+        switch(level) {
+            case 1: // 系统自检
+                this.addCalibrationChallenge();
+                break;
+            case 2: // 手术规划
+                this.addPathPlanningChallenge();
+                break;
+            case 3: // 精确操作
+                this.addPrecisionChallenge();
+                break;
+            case 4: // 人机协作
+                this.addCooperationChallenge();
+                break;
+        }
+    }
+
+    // 添加AI辅助消息
+    showAIAssistance(message, type = 'info') {
+        const aiMessage = document.createElement('div');
+        aiMessage.className = `ai-message ${type}`;
+        aiMessage.textContent = message;
+        
+        const feedback = document.getElementById('ai-feedback');
+        feedback.appendChild(aiMessage);
+        
+        setTimeout(() => {
+            aiMessage.remove();
+        }, 3000);
+    }
+
+    // 更新AI系统状态
+    updateAISystem() {
+        // 更新AI性能指标
+        const accuracy = this.calculateAIAccuracy();
+        const latency = this.measureAILatency();
+        const stability = this.assessAIStability();
+
+        // 更新显示
+        document.getElementById('accuracyBar').style.width = `${accuracy * 100}%`;
+        document.getElementById('stabilityBar').style.width = `${stability * 100}%`;
+        
+        // 显示AI系统状态
+        this.showAISystemStatus({
+            accuracy,
+            latency,
+            stability
+        });
+    }
+
+    // 模拟AI系统延迟
+    simulateAILatency() {
+        return new Promise(resolve => {
+            const baseLatency = 20; // 基础延迟
+            const variability = 10; // 延迟变化范围
+            const latency = baseLatency + Math.random() * variability;
+            
+            setTimeout(resolve, latency);
+        });
+    }
+
+    // 展示AI面临的挑战
+    demonstrateAIChallenges() {
+        const challenges = [
+            {
+                name: "数据质量",
+                description: "处理不完整或噪声数据",
+                simulation: () => this.simulateDataQualityIssues()
+            },
+            {
+                name: "实时性要求",
+                description: "在限定时间内完成决策",
+                simulation: () => this.simulateTimeConstraints()
+            },
+            {
+                name: "安全边界",
+                description: "确保操作安全性",
+                simulation: () => this.simulateSafetyConstraints()
+            }
+        ];
+
+        challenges.forEach(challenge => {
+            this.showChallenge(challenge);
+        });
+    }
+
+    // 记录和分析AI性能
+    analyzeAIPerformance() {
+        const performance = {
+            successRate: this.calculateSuccessRate(),
+            averageAccuracy: this.calculateAverageAccuracy(),
+            responseTime: this.calculateAverageResponseTime(),
+            safetyScore: this.calculateSafetyScore()
+        };
+
+        return performance;
     }
 
     // ... (其他必要的游戏功能方法)

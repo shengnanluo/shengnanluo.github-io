@@ -99,6 +99,32 @@ const LEVELS = {
         },
         timeLimit: 180,
         passingScore: 90
+    },
+    5: {
+        name: "AI适应性测试",
+        description: "测试AI系统在不同情况下的适应能力",
+        challenges: [
+            {
+                type: "adaptation",
+                name: "环境变化适应",
+                description: "在不同手术环境下保持稳定性",
+                difficulty: 4
+            },
+            {
+                type: "learning",
+                name: "实时学习",
+                description: "从操作中学习并改进",
+                difficulty: 5
+            }
+        ],
+        aiFeatures: {
+            pathPlanning: true,
+            riskAnalysis: true,
+            realTimeAssist: true,
+            adaptiveLearning: true
+        },
+        timeLimit: 240,
+        passingScore: 85
     }
 };
 
