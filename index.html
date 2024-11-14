@@ -2,59 +2,39 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>AI手术机器人模拟与分析系统</title>
+    <title>AI医疗机器人模拟游戏</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="container">
-        <div id="scene-container"></div>
-        <div id="controls">
-            <div class="section-title">手动控制</div>
-            <div class="control-group">
-                <button id="arm-up">机械臂上升</button>
-                <button id="arm-down">机械臂下降</button>
-            </div>
-            <div class="control-group">
-                <button id="rotate-left">向左旋转</button>
-                <button id="rotate-right">向右旋转</button>
-            </div>
-            
-            <div class="section-title">AI辅助系统</div>
-            <div class="ai-controls">
-                <button id="ai-path-planning">AI路径规划</button>
-                <button id="ai-risk-analysis">风险评估</button>
-                <button id="ai-gesture-control">手势控制</button>
-                <button id="ai-voice-control">语音控制</button>
-            </div>
+    <div class="game-container">
+        <div class="hud">
+            <div class="score">分数: <span id="score">0</span></div>
+            <div class="ai-assist">AI辅助: <span id="ai-status">开启</span></div>
+            <div class="timer">时间: <span id="timer">60</span>s</div>
+        </div>
+        
+        <canvas id="gameCanvas"></canvas>
+        
+        <div class="controls">
+            <button id="startGame">开始游戏</button>
+            <button id="toggleAI">切换AI辅助</button>
+        </div>
 
-            <div class="section-title">实时分析</div>
-            <div class="analysis-panel">
-                <div class="metric">
-                    <span>准确度:</span>
-                    <div id="accuracy-meter" class="meter"></div>
-                </div>
-                <div class="metric">
-                    <span>延迟:</span>
-                    <div id="latency-meter" class="meter"></div>
-                </div>
-                <div class="metric">
-                    <span>风险等级:</span>
-                    <div id="risk-meter" class="meter"></div>
+        <div class="stats">
+            <div class="stat">
+                <label>准确度</label>
+                <div class="progress-bar">
+                    <div id="accuracyBar" class="progress"></div>
                 </div>
             </div>
-
-            <div class="section-title">AI应用挑战</div>
-            <div class="challenges-panel">
-                <div class="challenge" id="latency-challenge">网络延迟</div>
-                <div class="challenge" id="accuracy-challenge">精确度</div>
-                <div class="challenge" id="safety-challenge">安全性</div>
-                <div class="challenge" id="cost-challenge">成本</div>
+            <div class="stat">
+                <label>手术风险</label>
+                <div class="progress-bar">
+                    <div id="riskBar" class="progress"></div>
+                </div>
             </div>
         </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ammo.js/2.0.0/ammo.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="simulator.js"></script>
+    <script src="game.js"></script>
 </body>
 </html> 
