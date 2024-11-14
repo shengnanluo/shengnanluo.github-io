@@ -2,164 +2,194 @@ class SurgeryGame {
     constructor() {
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
+        this.currentLevel = 1;
         this.score = 0;
         this.time = 60;
         this.aiEnabled = true;
-        this.targets = [];
-        this.instrument = {
-            x: 400,
-            y: 200,
-            size: 20
-        };
+        this.gameState = 'menu'; // menu, playing, paused, results
         
         this.setupCanvas();
         this.setupEventListeners();
+        this.loadLevel(this.currentLevel);
     }
 
-    setupCanvas() {
-        this.canvas.width = 800;
-        this.canvas.height = 400;
-    }
-
-    setupEventListeners() {
-        this.canvas.addEventListener('mousemove', (e) => {
-            const rect = this.canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+    loadLevel(levelNum) {
+        const level = LEVELS[levelNum];
+        this.currentChallenge = level.challenges[0];
+        this.timeLimit = level.timeLimit;
+        this.time = level.timeLimit;
+        
+        document.getElementById('currentChallenge').textContent = 
+            `${this.currentChallenge.name}: ${this.currentChallenge.description}`;
             
-            if (this.aiEnabled) {
-                // AI辅助，平滑移动
-                this.instrument.x += (x - this.instrument.x) * 0.1;
-                this.instrument.y += (y - this.instrument.y) * 0.1;
-            } else {
-                // 直接控制
-                this.instrument.x = x;
-                this.instrument.y = y;
-            }
-        });
-
-        document.getElementById('startGame').addEventListener('click', () => {
-            this.startGame();
-        });
-
-        document.getElementById('toggleAI').addEventListener('click', () => {
-            this.aiEnabled = !this.aiEnabled;
-            document.getElementById('ai-status').textContent = 
-                this.aiEnabled ? '开启' : '关闭';
-        });
+        this.setupLevelSpecificElements(level);
     }
 
-    startGame() {
-        this.score = 0;
-        this.time = 60;
+    setupLevelSpecificElements(level) {
+        // 设置AI功能
+        if (level.aiFeatures.pathPlanning) {
+            this.enablePathPlanning();
+        }
+        if (level.aiFeatures.riskAnalysis) {
+            this.enableRiskAnalysis();
+        }
+        // 设置关卡特定的目标和障碍物
+        this.setupTargets(level);
+        this.setupObstacles(level);
+    }
+
+    setupTargets(level) {
         this.targets = [];
-        this.generateTarget();
-        
-        this.gameLoop = setInterval(() => {
-            this.update();
-            this.draw();
-        }, 1000 / 60);
-
-        this.timer = setInterval(() => {
-            this.time--;
-            document.getElementById('timer').textContent = this.time;
-            
-            if (this.time <= 0) {
-                this.endGame();
-            }
-        }, 1000);
-    }
-
-    generateTarget() {
-        const target = {
-            x: Math.random() * (this.canvas.width - 40) + 20,
-            y: Math.random() * (this.canvas.height - 40) + 20,
-            size: Math.random() * 20 + 10,
-            type: Math.random() > 0.5 ? 'tumor' : 'vessel'
-        };
-        this.targets.push(target);
-    }
-
-    update() {
-        // 检查手术器械是否接触目标
-        this.targets.forEach((target, index) => {
-            const dx = this.instrument.x - target.x;
-            const dy = this.instrument.y - target.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            
-            if (distance < target.size + this.instrument.size) {
-                if (target.type === 'tumor') {
-                    this.score += 10;
-                    this.targets.splice(index, 1);
-                    this.generateTarget();
-                } else {
-                    // 碰到血管扣分
-                    this.score -= 20;
-                }
-            }
-        });
-
-        // 更新分数显示
-        document.getElementById('score').textContent = this.score;
-        
-        // 更新准确度和风险条
-        const accuracy = this.calculateAccuracy();
-        const risk = this.calculateRisk();
-        
-        document.getElementById('accuracyBar').style.width = `${accuracy}%`;
-        document.getElementById('riskBar').style.width = `${risk}%`;
-    }
-
-    draw() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        // 绘制目标
-        this.targets.forEach(target => {
-            this.ctx.beginPath();
-            this.ctx.arc(target.x, target.y, target.size, 0, Math.PI * 2);
-            this.ctx.fillStyle = target.type === 'tumor' ? '#ff0000' : '#0000ff';
-            this.ctx.fill();
-        });
-        
-        // 绘制手术器械
-        this.ctx.beginPath();
-        this.ctx.arc(this.instrument.x, this.instrument.y, 
-                    this.instrument.size, 0, Math.PI * 2);
-        this.ctx.fillStyle = this.aiEnabled ? '#00ff00' : '#ffffff';
-        this.ctx.fill();
-        
-        // AI辅助视觉效果
-        if (this.aiEnabled) {
-            this.drawAIAssist();
+        switch(level.name) {
+            case "系统自检":
+                this.addCalibrationTargets();
+                break;
+            case "手术规划":
+                this.addSurgicalTargets();
+                break;
+            case "精确操作":
+                this.addPrecisionTargets();
+                break;
+            case "人机协作":
+                this.addCooperativeTargets();
+                break;
         }
     }
 
-    drawAIAssist() {
-        this.targets.forEach(target => {
-            if (target.type === 'tumor') {
-                this.ctx.beginPath();
-                this.ctx.strokeStyle = 'rgba(0, 255, 0, 0.2)';
-                this.ctx.lineWidth = 2;
-                this.ctx.moveTo(this.instrument.x, this.instrument.y);
-                this.ctx.lineTo(target.x, target.y);
-                this.ctx.stroke();
-            }
+    addCalibrationTargets() {
+        // 添加校准点
+        for (let i = 0; i < 5; i++) {
+            this.targets.push({
+                x: 100 + i * 150,
+                y: 200,
+                size: 15,
+                type: 'calibration',
+                completed: false
+            });
+        }
+    }
+
+    addSurgicalTargets() {
+        // 添加手术目标
+        this.targets.push({
+            x: Math.random() * (this.canvas.width - 100) + 50,
+            y: Math.random() * (this.canvas.height - 100) + 50,
+            size: 30,
+            type: 'tumor',
+            completed: false
         });
     }
 
-    calculateAccuracy() {
-        return Math.min(100, Math.max(0, this.score / 2 + 50));
+    update() {
+        if (this.gameState !== 'playing') return;
+
+        this.updateInstrumentPosition();
+        this.checkCollisions();
+        this.updateAIAssistance();
+        this.updateStats();
+
+        // 检查关卡完成条件
+        if (this.checkLevelComplete()) {
+            this.showResults();
+        }
     }
 
-    calculateRisk() {
-        return Math.min(100, Math.max(0, 50 - this.score / 2));
+    updateAIAssistance() {
+        if (!this.aiEnabled) return;
+
+        // 计算最近目标
+        const nearestTarget = this.findNearestTarget();
+        if (nearestTarget) {
+            // 提供AI辅助指导
+            this.showAIGuidance(nearestTarget);
+            // 计算风险
+            this.calculateRisk(nearestTarget);
+        }
     }
 
-    endGame() {
-        clearInterval(this.gameLoop);
-        clearInterval(this.timer);
-        alert(`游戏结束！\n最终分数：${this.score}\n准确度：${this.calculateAccuracy()}%`);
+    findNearestTarget() {
+        let nearest = null;
+        let minDist = Infinity;
+        
+        this.targets.forEach(target => {
+            if (target.completed) return;
+            
+            const dist = this.calculateDistance(
+                this.instrument.x, this.instrument.y,
+                target.x, target.y
+            );
+            
+            if (dist < minDist) {
+                minDist = dist;
+                nearest = target;
+            }
+        });
+        
+        return nearest;
     }
+
+    showAIGuidance(target) {
+        // 绘制AI辅助线
+        this.ctx.beginPath();
+        this.ctx.strokeStyle = 'rgba(0, 255, 0, 0.3)';
+        this.ctx.moveTo(this.instrument.x, this.instrument.y);
+        this.ctx.lineTo(target.x, target.y);
+        this.ctx.stroke();
+
+        // 显示AI建议
+        const distance = this.calculateDistance(
+            this.instrument.x, this.instrument.y,
+            target.x, target.y
+        );
+        
+        if (distance < 100) {
+            this.showAIMessage("接近目标，请谨慎操作");
+        }
+    }
+
+    calculateRisk(target) {
+        // 计算风险因素
+        const distance = this.calculateDistance(
+            this.instrument.x, this.instrument.y,
+            target.x, target.y
+        );
+        
+        const speed = Math.sqrt(
+            Math.pow(this.instrument.vx, 2) + 
+            Math.pow(this.instrument.vy, 2)
+        );
+        
+        const risk = (distance < 50 ? 0.5 : 0.2) + (speed * 0.1);
+        
+        // 更新风险显示
+        document.getElementById('riskBar').style.width = `${risk * 100}%`;
+    }
+
+    showResults() {
+        this.gameState = 'results';
+        const resultsScreen = document.getElementById('results');
+        resultsScreen.classList.remove('hidden');
+        
+        // 显示详细结果
+        const scoreSummary = resultsScreen.querySelector('.score-summary');
+        scoreSummary.innerHTML = `
+            <h3>手术评分</h3>
+            <p>总分: ${this.score}</p>
+            <p>准确度: ${this.calculateAccuracy()}%</p>
+            <p>用时: ${this.timeLimit - this.time}秒</p>
+        `;
+        
+        // AI分析报告
+        const aiAnalysis = resultsScreen.querySelector('.ai-analysis');
+        aiAnalysis.innerHTML = `
+            <h3>AI分析报告</h3>
+            <p>操作稳定性: ${this.calculateStability()}%</p>
+            <p>风险控制: ${this.calculateRiskControl()}%</p>
+            <p>AI辅助效果: ${this.calculateAIEffectiveness()}%</p>
+        `;
+    }
+
+    // ... (其他必要的游戏功能方法)
 }
 
 // 初始化游戏

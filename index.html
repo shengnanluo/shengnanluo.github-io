@@ -2,39 +2,84 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>AI医疗机器人模拟游戏</title>
+    <title>AI医疗机器人模拟系统</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="game-container">
-        <div class="hud">
-            <div class="score">分数: <span id="score">0</span></div>
-            <div class="ai-assist">AI辅助: <span id="ai-status">开启</span></div>
-            <div class="timer">时间: <span id="timer">60</span>s</div>
-        </div>
-        
-        <canvas id="gameCanvas"></canvas>
-        
-        <div class="controls">
-            <button id="startGame">开始游戏</button>
-            <button id="toggleAI">切换AI辅助</button>
+        <div id="menu" class="screen">
+            <h1>AI医疗机器人模拟系统</h1>
+            <div class="level-select">
+                <button data-level="1">关卡1: 系统自检</button>
+                <button data-level="2">关卡2: 手术规划</button>
+                <button data-level="3">关卡3: 精确操作</button>
+                <button data-level="4">关卡4: 人机协作</button>
+            </div>
         </div>
 
-        <div class="stats">
-            <div class="stat">
-                <label>准确度</label>
-                <div class="progress-bar">
-                    <div id="accuracyBar" class="progress"></div>
+        <div id="game" class="screen hidden">
+            <div class="hud">
+                <div class="level-info">关卡: <span id="current-level">1</span></div>
+                <div class="score">分数: <span id="score">0</span></div>
+                <div class="ai-assist">AI辅助: <span id="ai-status">开启</span></div>
+                <div class="timer">时间: <span id="timer">60</span>s</div>
+            </div>
+            
+            <div class="game-area">
+                <canvas id="gameCanvas"></canvas>
+                <div id="ai-feedback" class="ai-feedback hidden">
+                    <div class="ai-message"></div>
                 </div>
             </div>
-            <div class="stat">
-                <label>手术风险</label>
-                <div class="progress-bar">
-                    <div id="riskBar" class="progress"></div>
+            
+            <div class="controls">
+                <div class="main-controls">
+                    <button id="startGame">开始手术</button>
+                    <button id="toggleAI">切换AI辅助</button>
+                    <button id="backToMenu">返回菜单</button>
+                </div>
+
+                <div class="stats">
+                    <div class="stat">
+                        <label>手术精确度</label>
+                        <div class="progress-bar">
+                            <div id="accuracyBar" class="progress"></div>
+                        </div>
+                    </div>
+                    <div class="stat">
+                        <label>系统稳定性</label>
+                        <div class="progress-bar">
+                            <div id="stabilityBar" class="progress"></div>
+                        </div>
+                    </div>
+                    <div class="stat">
+                        <label>手术风险</label>
+                        <div class="progress-bar">
+                            <div id="riskBar" class="progress"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="challenge-info">
+                    <h3>当前挑战</h3>
+                    <div id="currentChallenge"></div>
                 </div>
             </div>
         </div>
+
+        <div id="results" class="screen hidden">
+            <h2>手术完成</h2>
+            <div class="results-content">
+                <div class="score-summary"></div>
+                <div class="ai-analysis"></div>
+                <div class="challenges-summary"></div>
+            </div>
+            <button id="nextLevel">下一关</button>
+            <button id="retryLevel">重试</button>
+            <button id="returnToMenu">返回菜单</button>
+        </div>
     </div>
+    <script src="levels.js"></script>
     <script src="game.js"></script>
 </body>
 </html> 
