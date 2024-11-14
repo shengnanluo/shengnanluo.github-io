@@ -1,42 +1,268 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html>
 <head>
+    <title>AI医疗机器人演示</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI医疗机器人模拟器</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: #f5f5f5;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .robot-demo {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        .robot-avatar {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            background: url('https://api.dicebear.com/6.x/bottts/svg?seed=medical') center/cover;
+            border-radius: 60px;
+            animation: pulse 2s infinite;
+        }
+
+        .chat-container {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            padding: 10px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .bot-message {
+            background: #e3f2fd;
+            margin-right: 20%;
+        }
+
+        .user-message {
+            background: #f5f5f5;
+            margin-left: 20%;
+            text-align: right;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        input, select {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #1976D2;
+        }
+
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress {
+            width: 0%;
+            height: 100%;
+            background: #2196F3;
+            transition: width 0.5s;
+        }
+
+        .vital-signs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .vital-sign {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .vital-signs {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>AI医疗机器人模拟器</h1>
-            <div id="score">得分: <span>0</span></div>
-        </header>
-
-        <main>
-            <div class="game-area">
-                <canvas id="gameCanvas"></canvas>
-                <div id="tutorial" class="tutorial"></div>
-            </div>
+        <div class="robot-demo">
+            <div class="robot-avatar"></div>
+            <h2 style="text-align: center; margin-bottom: 20px;">AI医疗助手</h2>
             
-            <div class="control-panel">
-                <div id="level-info"></div>
-                <div class="buttons">
-                    <button id="startBtn">开始游戏</button>
-                    <button id="nextBtn" disabled>下一关</button>
+            <div class="vital-signs">
+                <div class="vital-sign">
+                    <h3>体温</h3>
+                    <input type="number" id="temperature" step="0.1" placeholder="36.5"> °C
+                </div>
+                <div class="vital-sign">
+                    <h3>血压</h3>
+                    <input type="text" id="blood-pressure" placeholder="120/80"> mmHg
+                </div>
+                <div class="vital-sign">
+                    <h3>心率</h3>
+                    <input type="number" id="heart-rate" placeholder="75"> bpm
                 </div>
             </div>
-        </main>
 
-        <footer>
-            <p>通过游戏学习AI在医疗机器人中的应用</p>
-        </footer>
+            <div class="chat-container" id="chat-container">
+                <div class="message bot-message">
+                    您好！我是AI医疗助手。请描述您的症状，我会协助进行初步诊断。
+                </div>
+            </div>
+
+            <div class="input-group">
+                <select id="symptom-select">
+                    <option value="">选择主要症状</option>
+                    <option value="发烧">发烧</option>
+                    <option value="头痛">头痛</option>
+                    <option value="咳嗽">咳嗽</option>
+                    <option value="腹痛">腹痛</option>
+                    <option value="恶心">恶心</option>
+                </select>
+                <input type="text" id="symptoms" placeholder="补充描述其他症状...">
+                <button onclick="diagnose()">诊断</button>
+            </div>
+
+            <div class="progress-container">
+                <h3>诊断进度</h3>
+                <div class="progress-bar">
+                    <div class="progress" id="progress"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script src="js/simulator.js"></script>
-    <script src="js/medical-vision.js"></script>
-    <script src="js/path-planning.js"></script>
-    <script src="js/risk-assessment.js"></script>
-    <script src="js/game.js"></script>
+    <script>
+        function addMessage(message, isBot = true) {
+            const chatContainer = document.getElementById('chat-container');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isBot ? 'bot-message' : 'user-message'}`;
+            messageDiv.textContent = message;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function updateProgress(percent) {
+            document.getElementById('progress').style.width = percent + '%';
+        }
+
+        function diagnose() {
+            const mainSymptom = document.getElementById('symptom-select').value;
+            const otherSymptoms = document.getElementById('symptoms').value.toLowerCase();
+            const temperature = parseFloat(document.getElementById('temperature').value) || 36.5;
+            const bloodPressure = document.getElementById('blood-pressure').value;
+            const heartRate = parseInt(document.getElementById('heart-rate').value) || 75;
+
+            // 添加用户输入的消息
+            addMessage(`主要症状: ${mainSymptom}, 其他症状: ${otherSymptoms}`, false);
+
+            // 模拟AI诊断过程
+            updateProgress(0);
+            setTimeout(() => {
+                updateProgress(30);
+                addMessage("正在分析症状...");
+            }, 500);
+
+            setTimeout(() => {
+                updateProgress(60);
+                addMessage("正在查询医学数据库...");
+            }, 1500);
+
+            setTimeout(() => {
+                updateProgress(100);
+                
+                let diagnosis = '';
+                let recommendation = '';
+
+                // 诊断逻辑
+                if (temperature > 37.5) {
+                    diagnosis += '发热 ';
+                }
+
+                if (mainSymptom === '发烧') {
+                    if (otherSymptoms.includes('咳嗽')) {
+                        diagnosis = '初步诊断：可能是上呼吸道感染';
+                        recommendation = '建议：\n1. 多休息，保持室内通风\n2. 适当补充水分\n3. 如果症状持续，建议到医院就医';
+                    } else {
+                        diagnosis = '初步诊断：需要进一步观察';
+                        recommendation = '建议：\n1. 监测体温变化\n2. 注意休息';
+                    }
+                } else if (mainSymptom === '头痛') {
+                    if (bloodPressure && parseInt(bloodPressure.split('/')[0]) > 140) {
+                        diagnosis = '初步诊断：血压偏高，伴有头痛症状';
+                        recommendation = '建议：\n1. 及时就医检查\n2. 保持心情平和\n3. 规律作息';
+                    } else {
+                        diagnosis = '初步诊断：可能是紧张性头痛';
+                        recommendation = '建议：\n1. 适当休息\n2. 避免用眼过度\n3. 如果症状加重请及时就医';
+                    }
+                }
+
+                addMessage(diagnosis);
+                addMessage(recommendation);
+            }, 2500);
+        }
+
+        // 初始化进度条
+        updateProgress(0);
+    </script>
 </body>
 </html> 
